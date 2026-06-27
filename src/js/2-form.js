@@ -1,30 +1,24 @@
-const formData = {
+let formData = {
     email: '',
     message: '',
   };
   
+  const STORAGE_KEY = 'feedback-form-state';
   const form = document.querySelector('.feedback-form');
-  const FEEDBACK_FORM_STATE = 'feedback-form-state';
   
-  document.addEventListener('DOMContentLoaded', () => {
-    const savedFormData = localStorage.getItem(FEEDBACK_FORM_STATE);
+  const savedData = localStorage.getItem(STORAGE_KEY);
   
-    if (!savedFormData) return;
+  if (savedData) {
+    formData = JSON.parse(savedData);
   
-    const parsedFormData = JSON.parse(savedFormData);
+    form.elements.email.value = formData.email || '';
+    form.elements.message.value = formData.message || '';
+  }
   
-    formData.email = parsedFormData.email;
-    formData.message = parsedFormData.message;
+  form.addEventListener('input', event => {
+    formData[event.target.name] = event.target.value.trim();
   
-    form.elements.email.value = formData.email;
-    form.elements.message.value = formData.message;
-  });
-  
-  form.addEventListener('input', () => {
-    formData.email = form.elements.email.value.trim();
-    formData.message = form.elements.message.value.trim();
-  
-    localStorage.setItem(FEEDBACK_FORM_STATE, JSON.stringify(formData));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
   });
   
   form.addEventListener('submit', event => {
@@ -37,9 +31,11 @@ const formData = {
   
     console.log(formData);
   
-    localStorage.removeItem(FEEDBACK_FORM_STATE);
+    localStorage.removeItem(STORAGE_KEY);
     form.reset();
   
-    formData.email = '';
-    formData.message = '';
+    formData = {
+      email: '',
+      message: '',
+    };
   });
